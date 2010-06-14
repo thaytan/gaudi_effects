@@ -63,14 +63,14 @@
 static gboolean
 plugin_init (GstPlugin *plugin)
 {
-  gboolean ret = FALSE;
+  gboolean ret = TRUE;
 
-  ret |= gst_burn_plugin_init (plugin);
-  ret |= gst_chromium_plugin_init (plugin);
-  ret |= gst_dilate_plugin_init (plugin);
-  ret |= gst_dodge_plugin_init (plugin);
-  ret |= gst_exclusion_plugin_init (plugin);
-  ret |= gst_solarize_plugin_init (plugin);
+  ret &= gst_burn_plugin_init (plugin);
+  ret &= gst_chromium_plugin_init (plugin);
+  ret &= gst_dilate_plugin_init (plugin);
+  ret &= gst_dodge_plugin_init (plugin);
+  ret &= gst_exclusion_plugin_init (plugin);
+  ret &= gst_solarize_plugin_init (plugin);
 
   return ret;
 }
