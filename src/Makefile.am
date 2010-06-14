@@ -3,7 +3,7 @@ plugin_LTLIBRARIES = libgstgaudieffects.la
 libgstgaudieffects_la_SOURCES = gstburn.c gstchromium.c gstdilate.c \
         gstdodge.c gstexclusion.c gstsolarize.c gstplugin.c
 libgstgaudieffects_la_CFLAGS = $(GST_CFLAGS)
-libgstgaudieffects_la_LIBADD = $(GST_LIBS)
+libgstgaudieffects_la_LIBADD = $(GST_LIBS) -lgstvideo-@GST_MAJORMINOR@
 libgstgaudieffects_la_LDFLAGS = $(GST_PLUGIN_LDFLAGS)
 libgstgaudieffects_la_LIBTOOLFLAGS = --tag=disable-static
 
