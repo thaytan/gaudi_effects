@@ -97,7 +97,6 @@ static gint gate_int (gint value, gint min, gint max);
 static void transform (guint32 * src, guint32 * dest, gint video_area);
 
 /* The capabilities of the inputs and outputs. */
-
 static GstStaticPadTemplate sink_factory = GST_STATIC_PAD_TEMPLATE ("sink",
     GST_PAD_SINK,
     GST_PAD_ALWAYS,
@@ -110,16 +109,18 @@ static GstStaticPadTemplate src_factory = GST_STATIC_PAD_TEMPLATE ("src",
     GST_STATIC_CAPS (CAPS_STR)
     );
 
-GST_BOILERPLATE (Gstburn, gst_burn, GstElement,
-    GST_TYPE_ELEMENT);
+GST_BOILERPLATE (Gstburn, gst_burn, GstVideoFilter,
+    GST_TYPE_VIDEO_FILTER);
 
 static void gst_burn_set_property (GObject * object, guint prop_id,
     const GValue * value, GParamSpec * pspec);
 static void gst_burn_get_property (GObject * object, guint prop_id,
     GValue * value, GParamSpec * pspec);
 
-static gboolean gst_burn_set_caps (GstPad * pad, GstCaps * caps);
-static GstFlowReturn gst_burn_chain (GstPad * pad, GstBuffer * buf);
+static gboolean gst_burn_set_caps (GstBaseTransform * btrans,
+    GstCaps * incaps, GstCaps *outcaps);
+static GstFlowReturn gst_burn_transform (GstBaseTransform *btrans,
+    GstBuffer *in_buf, GstBuffer *out_buf);
 
 /* GObject vmethod implementations */
 
@@ -144,11 +145,8 @@ gst_burn_base_init (gpointer gclass)
 static void
 gst_burn_class_init (GstburnClass * klass)
 {
-  GObjectClass *gobject_class;
-  GstElementClass *gstelement_class;
-
-  gobject_class = (GObjectClass *) klass;
-  gstelement_class = (GstElementClass *) klass;
+  GObjectClass *gobject_class = (GObjectClass *) klass;
+  GstBaseTransformClass *trans_class = (GstBaseTransformClass *) klass;
 
   gobject_class->set_property = gst_burn_set_property;
   gobject_class->get_property = gst_burn_get_property;
@@ -156,6 +154,9 @@ gst_burn_class_init (GstburnClass * klass)
   g_object_class_install_property (gobject_class, PROP_SILENT,
       g_param_spec_boolean ("silent", "Silent", "Produce verbose output ?",
           FALSE, G_PARAM_READWRITE));
+
+  trans_class->set_caps = GST_DEBUG_FUNCPTR(gst_burn_set_caps);
+  trans_class->transform = GST_DEBUG_FUNCPTR(gst_burn_transform);
 }
 
 /* Initialize the new element,
@@ -167,20 +168,6 @@ static void
 gst_burn_init (Gstburn * filter,
     GstburnClass * gclass)
 {
-  filter->sinkpad = gst_pad_new_from_static_template (&sink_factory, "sink");
-  gst_pad_set_setcaps_function (filter->sinkpad,
-                                GST_DEBUG_FUNCPTR(gst_burn_set_caps));
-  gst_pad_set_getcaps_function (filter->sinkpad,
-                                GST_DEBUG_FUNCPTR(gst_pad_proxy_getcaps));
-  gst_pad_set_chain_function (filter->sinkpad,
-                              GST_DEBUG_FUNCPTR(gst_burn_chain));
-
-  filter->srcpad = gst_pad_new_from_static_template (&src_factory, "src");
-  gst_pad_set_getcaps_function (filter->srcpad,
-                                GST_DEBUG_FUNCPTR(gst_pad_proxy_getcaps));
-
-  gst_element_add_pad (GST_ELEMENT (filter), filter->sinkpad);
-  gst_element_add_pad (GST_ELEMENT (filter), filter->srcpad);
   filter->silent = FALSE;
 }
 
@@ -220,43 +207,35 @@ gst_burn_get_property (GObject * object, guint prop_id,
 
 /* Handle the link with other elements. */
 static gboolean
-gst_burn_set_caps (GstPad * pad, GstCaps * caps)
+gst_burn_set_caps (GstBaseTransform * btrans, GstCaps * incaps,
+    GstCaps *outcaps)
 {
-  Gstburn *filter;
+  Gstburn *filter = GST_BURN(btrans);
   GstStructure *structure;
-  GstPad *otherpad;
+  gboolean ret = TRUE;
 
-  filter = GST_BURN (gst_pad_get_parent (pad));
-  otherpad = (pad == filter->srcpad) ? filter->sinkpad : filter->srcpad;
+  structure = gst_caps_get_structure (incaps, 0);
 
-  structure = gst_caps_get_structure (caps, 0);
-  gst_structure_get_int (structure, "width", &filter->width);
-  gst_structure_get_int (structure, "height", &filter->height);
+  ret &= gst_structure_get_int (structure, "width", &filter->width);
+  ret &= gst_structure_get_int (structure, "height", &filter->height);
 
-  gst_object_unref (filter);
-
-  return gst_pad_set_caps (otherpad, caps);
+  return ret;
 }
 
 /* Actual processing. */
 static GstFlowReturn
-gst_burn_chain (GstPad * pad, GstBuffer * in_buf)
+gst_burn_transform (GstBaseTransform *btrans,
+    GstBuffer *in_buf, GstBuffer *out_buf)
 {
-  Gstburn *filter;
-  GstBuffer * out_buf = gst_buffer_copy(in_buf); 
-  gint width, height, video_size;
-
+  Gstburn *filter = GST_BURN (btrans);
+  gint video_size;
   guint32 *src = (guint32 * ) GST_BUFFER_DATA (in_buf);
   guint32 *dest = (guint32 * ) GST_BUFFER_DATA (out_buf);
 
-  filter = GST_BURN (GST_OBJECT_PARENT (pad));
-  width = filter->width;
-  height = filter->height;
-  video_size = width * height;
-
+  video_size = filter->width * filter->height;
   transform (src, dest, video_size);
 
-  return gst_pad_push (filter->srcpad, out_buf);
+  return GST_FLOW_OK;
 }
 
 /* Entry point to initialize the plug-in.

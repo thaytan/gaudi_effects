@@ -75,14 +75,12 @@ struct _Gstburn
 
   gint width, height;
 
-  GstPad *sinkpad, *srcpad;
-
   gboolean silent;
 };
 
 struct _GstburnClass 
 {
-  GstElementClass parent_class;
+  GstVideoFilterClass parent_class;
 };
 
 GType gst_burn_get_type (void);
