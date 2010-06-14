@@ -52,7 +52,7 @@
  * <refsect2>
  * <title>Example launch line</title>
  * |[
- * gst-launch -v videotestsrc ! chromium ! ffmpegcolorspace ! auutovideosink
+ * gst-launch -v videotestsrc ! chromium ! ffmpegcolorspace ! autovideosink
  * ]| This pipeline shows the effect of chromium on a test stream
  * </refsect2>
  */

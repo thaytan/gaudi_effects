@@ -43,19 +43,6 @@
  * Boston, MA 02111-1307, USA.
  */
 
-/**
- * SECTION:element-plugin
- *
- * FIXME:Describe plugin here.
- *
- * <refsect2>
- * <title>Example launch line</title>
- * |[
- * gst-launch -v -m fakesrc ! plugin ! fakesink silent=TRUE
- * ]|
- * </refsect2>
- */
-
 #ifdef HAVE_CONFIG_H
 #  include <config.h>
 #endif
