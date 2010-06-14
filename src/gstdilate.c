@@ -291,7 +291,6 @@ inline guint32 get_luminance ( guint32 in)
 /* Transform processes each frame. */
 static void transform (guint32 * src, guint32 * dest, gint video_area, gint width, gint height)
 {
-  gint x, y;
   guint32 out_luminance, down_luminance, right_luminance;
   guint32 up_luminance, left_luminance;
 
