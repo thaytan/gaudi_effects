@@ -64,6 +64,7 @@
 #include <gst/gst.h>
 #include <math.h>
 
+#include "gstplugin.h"
 #include "gstsolarize.h"
 
 #include <gst/video/video.h>
@@ -260,8 +261,8 @@ gst_solarize_chain (GstPad * pad, GstBuffer * in_buf)
 
 /* Entry point to initialize the plug-in.
  * Register the element factories and other features. */
-static gboolean
-solarize_init (GstPlugin * solarize)
+gboolean
+gst_solarize_plugin_init (GstPlugin * solarize)
 {
   /* debug category for fltering log messages */
   GST_DEBUG_CATEGORY_INIT (gst_solarize_debug, "solarize",
@@ -270,23 +271,6 @@ solarize_init (GstPlugin * solarize)
   return gst_element_register (solarize, "solarize", GST_RANK_NONE,
       GST_TYPE_SOLARIZE);
 }
-
-#ifndef PACKAGE
-#define PACKAGE "solarize"
-#endif
-
-/* Register solarize. */
-GST_PLUGIN_DEFINE (
-    GST_VERSION_MAJOR,
-    GST_VERSION_MINOR,
-    "solarize",
-    "Solarize tune inverse in the video signal.",
-    solarize_init,
-    VERSION,
-    "LGPL",
-    "GStreamer",
-    "http://gstreamer.net/"
-)
 
 /*** Now the image processing work.... ***/
 

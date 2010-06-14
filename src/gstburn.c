@@ -64,6 +64,7 @@
 #include <gst/gst.h>
 #include <math.h>
 
+#include "gstplugin.h"
 #include "gstburn.h"
 
 #include <gst/video/video.h>
@@ -260,8 +261,8 @@ gst_burn_chain (GstPad * pad, GstBuffer * in_buf)
 
 /* Entry point to initialize the plug-in.
  * Register the element factories and other features. */
-static gboolean
-burn_init (GstPlugin * burn)
+gboolean
+gst_burn_plugin_init (GstPlugin * burn)
 {
   /* debug category for fltering log messages */
   GST_DEBUG_CATEGORY_INIT (gst_burn_debug, "burn",
@@ -270,23 +271,6 @@ burn_init (GstPlugin * burn)
   return gst_element_register (burn, "burn", GST_RANK_NONE,
       GST_TYPE_BURN);
 }
-
-#ifndef PACKAGE
-#define PACKAGE "burn"
-#endif
-
-/* Register burn. */
-GST_PLUGIN_DEFINE (
-    GST_VERSION_MAJOR,
-    GST_VERSION_MINOR,
-    "burn",
-    "Burn adjusts the colors in the video signal.",
-    burn_init,
-    VERSION,
-    "LGPL",
-    "GStreamer",
-    "http://gstreamer.net/"
-)
 
 /*** Now the image processing work.... ***/
 

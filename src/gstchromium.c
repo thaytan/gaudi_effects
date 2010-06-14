@@ -64,6 +64,7 @@
 #include <gst/gst.h>
 #include <math.h>
 
+#include "gstplugin.h"
 #include "gstchromium.h"
 
 #include <gst/video/video.h>
@@ -274,8 +275,8 @@ gst_chromium_chain (GstPad * pad, GstBuffer * in_buf)
 
 /* Entry point to initialize the plug-in.
  * Register the element factories and other features. */
-static gboolean
-chromium_init (GstPlugin * chromium)
+gboolean
+gst_chromium_plugin_init (GstPlugin * chromium)
 {
   /* debug category for fltering log messages */
   GST_DEBUG_CATEGORY_INIT (gst_chromium_debug, "chromium",
@@ -284,23 +285,6 @@ chromium_init (GstPlugin * chromium)
   return gst_element_register (chromium, "chromium", GST_RANK_NONE,
       GST_TYPE_CHROMIUM);
 }
-
-#ifndef PACKAGE
-#define PACKAGE "chromium"
-#endif
-
-/* Register chromium. */
-GST_PLUGIN_DEFINE (
-    GST_VERSION_MAJOR,
-    GST_VERSION_MINOR,
-    "chromium",
-    "Chromium breaks the colors of a video signal.",
-    chromium_init,
-    VERSION,
-    "LGPL",
-    "GStreamer",
-    "http://gstreamer.net/"
-)
 
 /*** Now the image processing work.... ***/
 

@@ -64,6 +64,7 @@
 #include <gst/gst.h>
 #include <math.h>
 
+#include "gstplugin.h"
 #include "gstexclusion.h"
 
 #include <gst/video/video.h>
@@ -260,8 +261,8 @@ gst_exclusion_chain (GstPad * pad, GstBuffer * in_buf)
 
 /* Entry point to initialize the plug-in.
  * Register the element factories and other features. */
-static gboolean
-exclusion_init (GstPlugin * exclusion)
+gboolean
+gst_exclusion_plugin_init (GstPlugin * exclusion)
 {
   /* debug category for fltering log messages */
   GST_DEBUG_CATEGORY_INIT (gst_exclusion_debug, "exclusion",
@@ -270,23 +271,6 @@ exclusion_init (GstPlugin * exclusion)
   return gst_element_register (exclusion, "exclusion", GST_RANK_NONE,
       GST_TYPE_EXCLUSION);
 }
-
-#ifndef PACKAGE
-#define PACKAGE "exclusion"
-#endif
-
-/* Register exclusion. */
-GST_PLUGIN_DEFINE (
-    GST_VERSION_MAJOR,
-    GST_VERSION_MINOR,
-    "exclusion",
-    "Exclusion excludes the colors in the video signal.",
-    exclusion_init,
-    VERSION,
-    "LGPL",
-    "GStreamer",
-    "http://gstreamer.net/"
-)
 
 /*** Now the image processing work.... ***/
 

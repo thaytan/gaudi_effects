@@ -64,6 +64,7 @@
 #include <gst/gst.h>
 #include <math.h>
 
+#include "gstplugin.h"
 #include "gstdilate.h"
 
 #include <gst/video/video.h>
@@ -260,8 +261,8 @@ gst_dilate_chain (GstPad * pad, GstBuffer * in_buf)
 
 /* Entry point to initialize the plug-in.
  * Register the element factories and other features. */
-static gboolean
-dilate_init (GstPlugin * dilate)
+gboolean
+gst_dilate_plugin_init (GstPlugin * dilate)
 {
   /* debug category for fltering log messages */
   GST_DEBUG_CATEGORY_INIT (gst_dilate_debug, "dilate",
@@ -270,23 +271,6 @@ dilate_init (GstPlugin * dilate)
   return gst_element_register (dilate, "dilate", GST_RANK_NONE,
       GST_TYPE_DILATE);
 }
-
-#ifndef PACKAGE
-#define PACKAGE "dilate"
-#endif
-
-/* Register dilate. */
-GST_PLUGIN_DEFINE (
-    GST_VERSION_MAJOR,
-    GST_VERSION_MINOR,
-    "dilate",
-    "Dilate copies the brightest pixel around.",
-    dilate_init,
-    VERSION,
-    "LGPL",
-    "GStreamer",
-    "http://gstreamer.net/"
-)
 
 /*** Now the image processing work.... ***/
 

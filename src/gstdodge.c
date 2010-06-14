@@ -64,6 +64,7 @@
 #include <gst/gst.h>
 #include <math.h>
 
+#include "gstplugin.h"
 #include "gstdodge.h"
 
 #include <gst/video/video.h>
@@ -260,8 +261,8 @@ gst_dodge_chain (GstPad * pad, GstBuffer * in_buf)
 
 /* Entry point to initialize the plug-in.
  * Register the element factories and other features. */
-static gboolean
-dodge_init (GstPlugin * dodge)
+gboolean
+gst_dodge_plugin_init (GstPlugin * dodge)
 {
   /* debug category for fltering log messages */
   GST_DEBUG_CATEGORY_INIT (gst_dodge_debug, "dodge",
@@ -270,23 +271,6 @@ dodge_init (GstPlugin * dodge)
   return gst_element_register (dodge, "dodge", GST_RANK_NONE,
       GST_TYPE_DODGE);
 }
-
-#ifndef PACKAGE
-#define PACKAGE "dodge"
-#endif
-
-/* Register dodge. */
-GST_PLUGIN_DEFINE (
-    GST_VERSION_MAJOR,
-    GST_VERSION_MINOR,
-    "dodge",
-    "Dodge saturates the colors in the video signal.",
-    dodge_init,
-    VERSION,
-    "LGPL",
-    "GStreamer",
-    "http://gstreamer.net/"
-)
 
 /*** Now the image processing work.... ***/
 
