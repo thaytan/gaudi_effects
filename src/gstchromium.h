@@ -72,17 +72,14 @@ struct _Gstchromium
   GstVideoFilter videofilter;
 
   /* < private > */
-
   gint width, height;
-
-  GstPad *sinkpad, *srcpad;
 
   gboolean silent;
 };
 
 struct _GstchromiumClass 
 {
-  GstElementClass parent_class;
+  GstVideoFilterClass parent_class;
 };
 
 GType gst_chromium_get_type (void);
