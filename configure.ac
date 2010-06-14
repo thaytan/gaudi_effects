@@ -4,6 +4,10 @@ AC_PREREQ([2.53])
 dnl package name, and version
 AC_INIT([gaudi-effects],[0.10.0])
 
+dnl GStreamer version to attempt to compile against
+GST_MAJORMINOR=0.10
+AC_SUBST(GST_MAJORMINOR)
+
 dnl required versions of gstreamer and plugins-base
 GST_REQUIRED=0.10.16
 GSTPB_REQUIRED=0.10.16
@@ -43,10 +47,10 @@ dnl for libgstrtp-0.10: gstreamer-rtp-0.10 >= $GST_REQUIRED
 dnl for libgstrtsp-0.10: gstreamer-rtsp-0.10 >= $GST_REQUIRED
 dnl etc.
 PKG_CHECK_MODULES(GST, [
-  gstreamer-0.10 >= $GST_REQUIRED
-  gstreamer-base-0.10 >= $GST_REQUIRED
-  gstreamer-controller-0.10 >= $GST_REQUIRED
-  gstreamer-plugins-base-0.10 >= $GSTPB_REQUIRED
+  gstreamer-$GST_MAJORMINOR >= $GST_REQUIRED
+  gstreamer-base-$GST_MAJORMINOR >= $GST_REQUIRED
+  gstreamer-controller-$GST_MAJORMINOR >= $GST_REQUIRED
+  gstreamer-plugins-base-$GST_MAJORMINOR >= $GSTPB_REQUIRED
 ], [
   AC_SUBST(GST_CFLAGS)
   AC_SUBST(GST_LIBS)
@@ -54,9 +58,11 @@ PKG_CHECK_MODULES(GST, [
   AC_MSG_ERROR([
       You need to install or upgrade the GStreamer development
       packages on your system. On debian-based systems these are
-      libgstreamer0.10-dev and libgstreamer-plugins-base0.10-dev.
-      on RPM-based systems gstreamer0.10-devel, libgstreamer0.10-devel
-      or similar. The minimum version required is $GST_REQUIRED.
+      libgstreamer$GST_MAJORMINOR-dev and
+      libgstreamer-plugins-base$GST_MAJORMINOR-dev.
+      On RPM-based systems gstreamer$GST_MAJORMINOR-devel,
+      libgstreamer$GST_MAJORMINOR-devel or similar. The minimum version
+      required is $GST_REQUIRED.
   ])
 ])
 
@@ -73,9 +79,9 @@ AC_COMPILE_IFELSE([AC_LANG_PROGRAM([ ], [ ])], [
 
 dnl set the plugindir where plugins should be installed (for src/Makefile.am)
 if test "x${prefix}" = "x$HOME"; then
-  plugindir="$HOME/.gstreamer-0.10/plugins"
+  plugindir="$HOME/.gstreamer-$GST_MAJORMINOR/plugins"
 else
-  plugindir="\$(libdir)/gstreamer-0.10"
+  plugindir="\$(libdir)/gstreamer-$GST_MAJORMINOR"
 fi
 AC_SUBST(plugindir)
 
